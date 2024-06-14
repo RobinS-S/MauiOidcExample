@@ -1,0 +1,88 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:pages="using:MauiOidcExample.Pages"
+             x:Class="MauiOidcExample.Pages.MainPage"
+             x:DataType="pages:MainPageViewModel">
+
+    <ScrollView>
+        <VerticalStackLayout
+            Padding="30,0"
+            Spacing="25">
+            <StackLayout>
+
+                <Image
+                    x:Name="Picture"
+                    Source="dotnet_bot.png"
+                    HeightRequest="185"
+                    Aspect="AspectFit"
+                    SemanticProperties.Description="dot net bot in a race car number eight" />
+
+                <Label
+                    Text="Hello, World!"
+                    Style="{StaticResource Headline}"
+                    SemanticProperties.HeadingLevel="Level1" />
+
+                <Label
+                    x:Name="WelcomeLabel"
+                    Text="Welcome to &#10;.NET Multi-platform App UI"
+                    Style="{StaticResource SubHeadline}"
+                    SemanticProperties.HeadingLevel="Level2"
+                    SemanticProperties.Description="Welcome to dot net Multi platform App U I" />
+
+            </StackLayout>
+
+            <StackLayout
+                x:Name="LoginView">
+                <Button
+                    x:Name="LoginBtn"
+                    Text="Log In"
+                    SemanticProperties.Hint="Click to log in"
+                    Clicked="OnLoginClicked"
+                    HorizontalOptions="Center" />
+            </StackLayout>
+
+            <StackLayout
+                x:Name="HomeView"
+                IsVisible="false">
+
+                <Button
+                    x:Name="LogoutBtn"
+                    Text="Log Out"
+                    SemanticProperties.Hint="Click to log out"
+                    Clicked="OnLogoutClicked"
+                    HorizontalOptions="Center" />
+
+                <Label
+                    x:Name="ErrorMessage"
+                    Text="{Binding ErrorMessage}"
+                    Style="{StaticResource SubHeadline}"
+                    SemanticProperties.HeadingLevel="Level3" />
+
+                <Label
+                    x:Name="WeatherDate"
+                    Text="{Binding Date, StringFormat='Date: {0}'}"
+                    SemanticProperties.HeadingLevel="Level3"
+                    SemanticProperties.Description="The weather forecast for today" />
+                <Label
+                    x:Name="WeatherSummary"
+                    Text="{Binding Summary}"
+                    SemanticProperties.HeadingLevel="Level3"
+                    SemanticProperties.Description="The weather forecast for today" />
+                <Label
+                    Text="{Binding TemperatureC, StringFormat='{0}c'}"
+                    x:Name="WeatherTemperatureC"
+                    SemanticProperties.HeadingLevel="Level3"
+                    SemanticProperties.Description="The weather forecast for today" />
+                <Label
+                    Text="{Binding TemperatureF, StringFormat='{0}f'}"
+                    x:Name="WeatherTemperatureF"
+                    SemanticProperties.HeadingLevel="Level3"
+                    SemanticProperties.Description="The weather forecast for today" />
+
+            </StackLayout>
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>
