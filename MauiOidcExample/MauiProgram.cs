@@ -1,12 +1,15 @@
 ﻿using System.Text.Json;
+using CommunityToolkit.Maui;
 using IdentityModel.OidcClient;
 using MauiOidcExample.Authentication;
 using MauiOidcExample.Authentication.Services;
 using MauiOidcExample.Authentication.Services.Interfaces;
 using MauiOidcExample.Configuration;
 using MauiOidcExample.Pages;
+using MauiOidcExample.Repositories;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using MainPageViewModel = MauiOidcExample.Pages.ViewModels.MainPageViewModel;
 #if WINDOWS
 using Microsoft.Maui.LifecycleEvents;
 #endif
@@ -20,6 +23,7 @@ public static class MauiProgram
         var builder = MauiApp.CreateBuilder();
         builder
             .UseMauiApp<App>()
+            .UseMauiCommunityToolkit()
             .ConfigureFonts(fonts =>
             {
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
@@ -47,6 +51,7 @@ public static class MauiProgram
             "Missing MAUI auth configuration appsettings.json, not in root or its build action not set to embedded resource!");
         builder.Services.AddSingleton(authConfiguration);
 
+        builder.Services.AddTransient<WeatherForecastRepository>();
         builder.Services.AddTransient<MainPageViewModel>();
         builder.Services.AddTransient<MainPage>();
 

@@ -3,14 +3,9 @@ using MauiOidcExample.Authentication.Services.Interfaces;
 
 namespace MauiOidcExample.Authentication;
 
-public class BearerTokenHandler : DelegatingHandler
+public class BearerTokenHandler(IAuthenticationTokenService tokenService) : DelegatingHandler
 {
-    private readonly IAuthenticationTokenService _tokenService;
-
-    public BearerTokenHandler(IAuthenticationTokenService tokenService)
-    {
-        _tokenService = tokenService;
-    }
+    private readonly IAuthenticationTokenService _tokenService = tokenService;
 
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request,
         CancellationToken cancellationToken)

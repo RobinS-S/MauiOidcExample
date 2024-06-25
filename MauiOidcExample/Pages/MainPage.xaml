@@ -2,22 +2,30 @@
 
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:pages="using:MauiOidcExample.Pages"
+             xmlns:viewModels="clr-namespace:MauiOidcExample.Pages.ViewModels"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              x:Class="MauiOidcExample.Pages.MainPage"
-             x:DataType="pages:MainPageViewModel">
+             x:DataType="viewModels:MainPageViewModel">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <toolkit:InvertedBoolConverter x:Key="InvertedBoolConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
 
     <ScrollView>
         <VerticalStackLayout
             Padding="30,0"
             Spacing="25">
-            <StackLayout>
+            <Image
+                x:Name="Picture"
+                Source="{Binding ImageSource}"
+                HeightRequest="185"
+                Aspect="AspectFit"
+                SemanticProperties.Description="dot net bot in a race car number eight" />
 
-                <Image
-                    x:Name="Picture"
-                    Source="dotnet_bot.png"
-                    HeightRequest="185"
-                    Aspect="AspectFit"
-                    SemanticProperties.Description="dot net bot in a race car number eight" />
+            <StackLayout
+                IsVisible="{Binding IsAuthenticated, Converter={StaticResource InvertedBoolConverter}}">
 
                 <Label
                     Text="Hello, World!"
@@ -34,7 +42,8 @@
             </StackLayout>
 
             <StackLayout
-                x:Name="LoginView">
+                x:Name="LoginView"
+                IsVisible="{Binding IsAuthenticated, Converter={StaticResource InvertedBoolConverter}}">
                 <Button
                     x:Name="LoginBtn"
                     Text="Log In"
@@ -45,7 +54,7 @@
 
             <StackLayout
                 x:Name="HomeView"
-                IsVisible="false">
+                IsVisible="{Binding IsAuthenticated}">
 
                 <Button
                     x:Name="LogoutBtn"
@@ -58,27 +67,31 @@
                     x:Name="ErrorMessage"
                     Text="{Binding ErrorMessage}"
                     Style="{StaticResource SubHeadline}"
-                    SemanticProperties.HeadingLevel="Level3" />
+                    SemanticProperties.HeadingLevel="Level2" />
 
                 <Label
                     x:Name="WeatherDate"
                     Text="{Binding Date, StringFormat='Date: {0}'}"
-                    SemanticProperties.HeadingLevel="Level3"
+                    HorizontalOptions="Center"
+                    SemanticProperties.HeadingLevel="Level2"
                     SemanticProperties.Description="The weather forecast for today" />
                 <Label
                     x:Name="WeatherSummary"
                     Text="{Binding Summary}"
-                    SemanticProperties.HeadingLevel="Level3"
+                    HorizontalOptions="Center"
+                    SemanticProperties.HeadingLevel="Level2"
                     SemanticProperties.Description="The weather forecast for today" />
                 <Label
-                    Text="{Binding TemperatureC, StringFormat='{0}c'}"
+                    Text="{Binding TemperatureC, StringFormat='Celsius: {0}c'}"
+                    HorizontalOptions="Center"
                     x:Name="WeatherTemperatureC"
-                    SemanticProperties.HeadingLevel="Level3"
+                    SemanticProperties.HeadingLevel="Level2"
                     SemanticProperties.Description="The weather forecast for today" />
                 <Label
-                    Text="{Binding TemperatureF, StringFormat='{0}f'}"
+                    Text="{Binding TemperatureF, StringFormat='Fahrenheit: {0}f'}"
+                    HorizontalOptions="Center"
                     x:Name="WeatherTemperatureF"
-                    SemanticProperties.HeadingLevel="Level3"
+                    SemanticProperties.HeadingLevel="Level2"
                     SemanticProperties.Description="The weather forecast for today" />
 
             </StackLayout>
