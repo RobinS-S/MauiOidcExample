@@ -43,7 +43,7 @@ public class AuthenticationService : IAuthenticationService, IDisposable
 
     public async Task<TokenResult> ValidateTokenAsync()
     {
-        if (!EnsureNetworkAvailableAsync()) return TokenResult.NoInternet;
+        if (!EnsureNetworkAvailable()) return TokenResult.NoInternet;
 
         var token = _tokenService.GetAccessToken();
         if (string.IsNullOrEmpty(token))
@@ -54,16 +54,9 @@ public class AuthenticationService : IAuthenticationService, IDisposable
 
         var expiration = _tokenService.GetAccessTokenExpiration();
         var refreshToken = _tokenService.GetRefreshToken();
-        if (expiration == null)
+        if (expiration == null || expiration < DateTimeOffset.UtcNow)
         {
-            _logger.LogWarning("No access token expiration found.");
-            SetLoggedOut();
-            return TokenResult.OtherError;
-        }
-
-        if (expiration < DateTimeOffset.UtcNow)
-        {
-            _logger.LogInformation("Access token has expired.");
+            _logger.LogInformation("Access token has expired or no expiration found.");
             return await RefreshOrLogoutAsync(refreshToken);
         }
 
@@ -80,7 +73,7 @@ public class AuthenticationService : IAuthenticationService, IDisposable
 
     public async Task<UserInfoResult<T>> GetUserInfoAsync<T>() where T : class
     {
-        if (!EnsureNetworkAvailableAsync()) return new UserInfoResult<T>(UserInfoResultType.NoInternet, null);
+        if (!EnsureNetworkAvailable()) return new UserInfoResult<T>(UserInfoResultType.NoInternet, null);
 
         var request = new HttpRequestMessage(HttpMethod.Get, _authConfiguration.Oidc.UserInfoUrl);
         var httpClient = _httpClientFactory.CreateClient(Constants.AuthenticatedHttpClientName);
@@ -107,7 +100,7 @@ public class AuthenticationService : IAuthenticationService, IDisposable
 
     public async Task<LoginResult> TryLoginAsync()
     {
-        if (!EnsureNetworkAvailableAsync()) return new LoginResult(TokenResult.NoInternet);
+        if (!EnsureNetworkAvailable()) return new LoginResult(TokenResult.NoInternet);
 
         var loginResult = await _authClient.LoginAsync(new LoginRequest
         {
@@ -131,7 +124,7 @@ public class AuthenticationService : IAuthenticationService, IDisposable
 
     public async Task<LogoutResult> TryLogoutAsync()
     {
-        if (!EnsureNetworkAvailableAsync()) return new LogoutResult(LogoutResultStatus.NoInternet);
+        if (!EnsureNetworkAvailable()) return new LogoutResult(LogoutResultStatus.NoInternet);
 
         var result = await _authClient.LogoutAsync(new LogoutRequest());
         ProcessRedirectionWindowsFocus();
@@ -147,7 +140,7 @@ public class AuthenticationService : IAuthenticationService, IDisposable
         return new LogoutResult(LogoutResultStatus.Success);
     }
 
-    public bool IsSignedIn()
+    public bool IsAuthenticated()
     {
         var authToken = _tokenService.GetAccessToken();
         return !string.IsNullOrEmpty(authToken);
@@ -199,21 +192,15 @@ public class AuthenticationService : IAuthenticationService, IDisposable
         if (DateTimeOffset.UtcNow >= halfExpiration) await TryRefreshTokenAsync();
     }
 
-    private bool IsNetworkAvailable()
+    private bool EnsureNetworkAvailable()
     {
         var networkAccess = Connectivity.Current.NetworkAccess;
-        return networkAccess == NetworkAccess.Internet;
-    }
 
-    private bool EnsureNetworkAvailableAsync()
-    {
-        if (!IsNetworkAvailable())
-        {
-            _logger.LogWarning("No network access available.");
-            return false;
-        }
+        if (networkAccess == NetworkAccess.Internet) 
+            return true;
 
-        return true;
+        _logger.LogWarning("No network access available.");
+        return false;
     }
 
     private async Task<TokenResult> RefreshOrLogoutAsync(string? refreshToken)
@@ -249,7 +236,7 @@ public class AuthenticationService : IAuthenticationService, IDisposable
 
     private async Task<RefreshTokenResult> RefreshTokenAsync(string refreshToken)
     {
-        if (!EnsureNetworkAvailableAsync()) return RefreshTokenResult.NoInternet;
+        if (!EnsureNetworkAvailable()) return RefreshTokenResult.NoInternet;
 
         var result = await _authClient.RefreshTokenAsync(refreshToken,
             new Parameters(_authConfiguration.Oidc.BackChannelExtraParameters ?? []));

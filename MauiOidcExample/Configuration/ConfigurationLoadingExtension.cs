@@ -23,7 +23,7 @@ public static class ConfigurationLoadingExtension
 
         var settings = names.Where(n =>
             currentAssembly.GetManifestResourceNames()
-                .Any(rn => rn.Equals(n, StringComparison.InvariantCultureIgnoreCase)));
+                .Any(rn => rn == n));
 
         foreach (var name in settings)
         {

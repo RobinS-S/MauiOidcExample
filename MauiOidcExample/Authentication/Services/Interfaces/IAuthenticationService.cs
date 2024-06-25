@@ -13,5 +13,5 @@ public interface IAuthenticationService
 
     Task<LogoutResult> TryLogoutAsync();
 
-    bool IsSignedIn();
+    bool IsAuthenticated();
 }
